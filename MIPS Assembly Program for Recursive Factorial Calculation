@@ -1,0 +1,29 @@
+.main:
+    addi $a0, $zero, 5    # Sets the parameter n to 5
+    jal factorial         # to Call the fact function
+    li $v0, 1             # Set $v0 to 1 to print an integer
+    syscall               # Print the result
+
+factorial:
+    addi $sp, $sp, -8     # Allocate space for stack frame
+    sw $ra, 0($sp)        
+    sw $a0, 4($sp)        # Saves the value of n
+
+    ble $a0, 1, bc 	# Checks if n <= 1 where bc stands for base case
+ 
+    addi $a0, $a0, -1     # Start of recursion for n * factorial (n - 1)
+    jal factorial        # Calls factorial recursively
+    lw $a0, 4($sp)       
+    mul $v0, $a0, $v0     # Calculates n * factorial(n - 1)
+
+    lw $ra, 0($sp)
+    addi $sp, $sp, 8      # Deallocates the stack frame
+    jr $ra                
+
+bc:
+    li $v0, 1             # Sets $v0 to 1 for n <= 1 for base case
+    lw $ra, 0($sp)        
+    addi $sp, $sp, 8      # Deallocates stack frame
+    jr $ra       
+   
+ exit:

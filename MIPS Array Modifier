@@ -1,0 +1,72 @@
+.data 
+A: .word -2,2
+i: .word 0
+.text
+.globl program
+program:
+	li $v0, 4 # to specify that the print output would be a string
+	la $a0, prmpt 
+	syscall
+
+	li $v0, 5 # reads the user input
+	syscall
+	move $t0, $v0 # moves it from $v0 to $t0
+
+	sw $t0, i # holds the number from $t0 to i
+
+	lw $t1, A
+	lw $t2, A+4 # $t1 as well as $t2 and = -2
+
+	beq $t0, 0, case0
+	beq $t0, 1, case1
+	beq $t0, 2, case2 # 1,2 could be combined for a shorter code
+
+default:
+	li $t1, -1 # specifies default case
+	j done # jumps to done
+
+case0:
+	li $t1, 0
+	j done 
+
+case1:
+	li $t2, 1
+	j done
+
+case2:
+	li $t2, 1
+	j done
+
+done:
+	sw $t1, A
+	sw $t2, A+4 
+
+	# Now, to print the results
+	li $v0, 1
+	move $a0, $t0
+	syscall
+	
+	li $v0, 4
+	la, $a0, colon
+	syscall
+	
+	li $v0, 1
+	move $a0, $t1
+	syscall
+	
+	li $v0, 4
+	la $a0, comma
+	syscall
+	
+	li $v0, 1
+	move $a0, $t2
+	syscall
+	
+	# to exit
+	li $v0, 10
+	syscall
+
+.data
+prmpt: .asciiz "Enter a number:"
+colon: .asciiz ": "
+comma: .asciiz ","

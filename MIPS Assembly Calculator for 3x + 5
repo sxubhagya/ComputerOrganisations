@@ -1,0 +1,31 @@
+.data 
+output: .asciiz "y=%d\n" # for output to be given as integer
+
+.text
+.globl program
+
+program:
+	li $t0,5 # initialises $t0 with 5
+	jal function # To jump and link for x
+	
+	move $t1, $v0 # Storing result in y
+	
+	li $v0, 4
+	la $a0, output
+	syscall # prints the result
+	
+	li $v0, 10
+	syscall # exits the program
+	
+function:
+	sw $ra, 0($sp)
+	addiu $sp, $sp, -4 # saves the address for reference (function prologue)
+	
+	li $t0, 3
+	mul $v0, $a0, $t0
+	li $t0, 5
+	add $v0, $v0, $t0 # calculates 3*a+5 and stores in $v0
+	
+	lw $ra, 0($sp)
+	addiu $sp, $sp, 4
+	jr $ra # ends the function

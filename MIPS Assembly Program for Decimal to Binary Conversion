@@ -1,0 +1,51 @@
+.data
+a: .asciiz " Enter Decimal Integer: "  # Prompts User for Input
+b: .asciiz "" # b is the output
+.align 2
+
+.text
+.globl initial # Starting point of the program 
+
+initial: # Reads user input and stores in $a0
+li $v0, 4
+la $a0, a 
+syscall
+li $v0, 5
+syscall
+move $a0, $v0
+
+jal binary # function that prints binary representation of input integer
+
+li $v0, 11
+li $a0, 10
+syscall
+
+j initial
+
+binary:
+
+add $t0, $zero, $a0 # initialises $t0 with input 
+add $t1, $zero, $zero # zeroes out $t1
+addi $t3, $zero, 1 # load 1 as a mask
+sll $t3, $t3, 31 # uses bitmask in $t3 for MSB
+addi $t4, $zero, 32 # uses loop for 32 iterations to process each bit of input integer
+
+loop:
+
+and $t1, $t0, $t3 # checks if current bit is 1 using and operation
+beq $t1, $zero, print 
+
+add $t1, $zero, $zero # zeroes out $t1
+addi $t1, $zero, 1 # puts 1 in $t1
+j print
+
+
+print: li $v0, 1 # it prints 1 using syscall
+move $a0, $t1
+syscall
+
+srl $t3, $t3, 1
+addi $t4, $t4, -1
+bne $t4, $zero, loop
+
+jr $ra
